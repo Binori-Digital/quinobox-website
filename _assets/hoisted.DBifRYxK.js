@@ -1,0 +1,1 @@
+import"./hoisted.CGVYuVLN.js";const e=document.getElementById("contact-form");e&&e.addEventListener("submit",function(t){t.preventDefault(),alert("Thank you for your message! We will get back to you soon."),e.reset()});

@@ -1,0 +1,1 @@
+import"./hoisted.CGVYuVLN.js";const t=document.getElementById("quote-form");t&&t.addEventListener("submit",function(e){e.preventDefault(),alert("Thank you for your quote request! We will contact you within 24 hours."),t.reset()});
