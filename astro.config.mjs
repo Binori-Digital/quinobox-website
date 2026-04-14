@@ -1,5 +1,13 @@
 import { defineConfig } from 'astro/config';
+import tailwind from '@astrojs/tailwind';
 
 export default defineConfig({
-  site: 'https://quinobox.com',
+  site: 'https://www.quinobox.com.my',
+  output: 'static',
+  build: {
+    assets: '_assets'
+  },
+  integrations: [
+    tailwind()
+  ]
 });

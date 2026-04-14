@@ -2,1523 +2,239 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="Quinobox — Custom Packaging Solutions">
-
-<style>
-  /* ─── TOKENS ─── */
-  :root {
-    --olive-dark:  #3B4A2F;
-    --olive:       #4E6438;
-    --olive-mid:   #6B8A4E;
-    --olive-lt:    #8FAD6A;
-    --olive-pale:  #D4E0C2;
-    --olive-wash:  #EEF3E7;
-    --yellow:      #F5E033;
-    --yellow-dk:   #D4BF00;
-    --yellow-lt:   #FBF0A0;
-    --ink:         #1E2618;
-    --white:       #FAFDF6;
-    --muted:       #6B7A5C;
-    --border:      #C8D9B0;
-    --charcoal:    #1E2618;
-
-    --ff: 'Public Sans', system-ui, sans-serif;
-    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
-  /* ─── RESET ─── */
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
-
-  body {
-    background: var(--olive-wash);
-    color: var(--ink);
-    font-family: var(--ff);
-    font-size: 18px;
-    line-height: 1.65;
-    overflow-x: hidden;
-  }
-
-  img { display: block; max-width: 100%; }
-  a  { color: inherit; text-decoration: none; }
-
-  /* ─── SCROLL REVEAL ─── */
-  .reveal {
-    opacity: 0;
-    transform: translateY(36px);
-    transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
-  }
-  .reveal.visible { opacity: 1; transform: none; }
-  .reveal-delay-1 { transition-delay: 0.1s; }
-  .reveal-delay-2 { transition-delay: 0.2s; }
-  .reveal-delay-3 { transition-delay: 0.3s; }
-  .reveal-delay-4 { transition-delay: 0.4s; }
-  .reveal-delay-5 { transition-delay: 0.5s; }
-
-  /* ─── NAV ─── */
-  nav {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1.25rem 4rem;
-    background: transparent;
-    transition: background 0.4s ease, backdrop-filter 0.4s ease, box-shadow 0.4s ease;
-  }
-  nav.scrolled {
-    background: rgba(238, 243, 231, 0.94);
-    backdrop-filter: blur(14px);
-    box-shadow: 0 1px 0 var(--border);
-  }
-
-  .nav-logo {
-    font-family: var(--ff);
-    font-size: 1.75rem;
-    font-weight: 900;
-    letter-spacing: -0.02em;
-    color: var(--olive-dark);
-    text-transform: lowercase;
-  }
-  .nav-logo span { color: var(--yellow-dk); }
-
-  .nav-links {
-    display: flex;
-    gap: 2.5rem;
-    list-style: none;
-  }
-  .nav-links a {
-    font-size: 0.9rem;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--olive-dark);
-    position: relative;
-    transition: color 0.2s;
-  }
-  .nav-links a::after {
-    content: '';
-    position: absolute;
-    bottom: -4px; left: 0;
-    width: 0; height: 2px;
-    background: var(--yellow);
-    transition: width 0.3s var(--ease-out);
-  }
-  .nav-links a:hover { color: var(--olive); }
-  .nav-links a:hover::after { width: 100%; }
-
-  .nav-cta {
-    background: var(--yellow) !important;
-    color: var(--ink) !important;
-    padding: 0.65rem 1.5rem;
-    font-weight: 700 !important;
-    font-size: 0.88rem !important;
-    letter-spacing: 0.06em !important;
-    text-transform: uppercase;
-    transition: background 0.2s, transform 0.2s !important;
-  }
-  .nav-cta::after { display: none !important; }
-  .nav-cta:hover { background: var(--yellow-dk) !important; transform: translateY(-1px); }
-
-  /* ─── HERO ─── */
-  .hero {
-    min-height: 100vh;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .hero-left {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 9rem 4rem 5rem 4rem;
-    position: relative;
-    z-index: 2;
-    background: var(--olive-dark);
-  }
-
-  .hero-eyebrow {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    font-size: 0.82rem;
-    font-weight: 700;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--yellow);
-    margin-bottom: 1.75rem;
-    opacity: 0;
-    animation: fadeUp 0.8s var(--ease-out) 0.2s forwards;
-  }
-  .hero-eyebrow::before {
-    content: '';
-    display: block;
-    width: 32px; height: 2px;
-    background: var(--yellow);
-  }
-
-  .hero-title {
-    font-family: var(--ff);
-    font-size: clamp(3rem, 5.5vw, 5rem);
-    font-weight: 900;
-    line-height: 1.0;
-    letter-spacing: -0.03em;
-    color: var(--white);
-    margin-bottom: 1.75rem;
-    opacity: 0;
-    animation: fadeUp 0.9s var(--ease-out) 0.35s forwards;
-  }
-  .hero-title em {
-    font-style: normal;
-    color: var(--yellow);
-  }
-
-  .hero-sub {
-    font-size: 1.1rem;
-    font-weight: 300;
-    color: var(--olive-pale);
-    max-width: 430px;
-    line-height: 1.8;
-    margin-bottom: 2.5rem;
-    opacity: 0;
-    animation: fadeUp 0.9s var(--ease-out) 0.5s forwards;
-  }
-
-  .hero-actions {
-    display: flex;
-    align-items: center;
-    gap: 1.75rem;
-    opacity: 0;
-    animation: fadeUp 0.9s var(--ease-out) 0.65s forwards;
-  }
-
-  .btn-primary {
-    background: var(--yellow);
-    color: var(--ink);
-    padding: 1.1rem 2.5rem;
-    font-family: var(--ff);
-    font-size: 0.95rem;
-    font-weight: 800;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    border: none;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.2s;
-    display: inline-block;
-  }
-  .btn-primary:hover { background: var(--yellow-dk); transform: translateY(-2px); }
-
-  .btn-ghost {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--olive-pale);
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    transition: gap 0.2s, color 0.2s;
-  }
-  .btn-ghost:hover { gap: 1rem; color: var(--yellow); }
-
-  /* Hero right — full image */
-  .hero-right {
-    position: relative;
-    overflow: hidden;
-  }
-  .hero-right img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-    filter: saturate(0.8);
-  }
-  .hero-right::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to right, rgba(59,74,47,0.5) 0%, transparent 60%);
-  }
-
-  /* Stats bar */
-  .hero-stat-strip {
-    grid-column: 1 / -1;
-    background: var(--yellow);
-    display: flex;
-    opacity: 0;
-    animation: fadeUp 0.8s var(--ease-out) 1s forwards;
-  }
-  .hero-stat {
-    flex: 1;
-    padding: 1.75rem 2rem;
-    border-right: 1px solid rgba(0,0,0,0.1);
-    display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
-  }
-  .hero-stat:last-child { border-right: none; }
-  .stat-number {
-    font-size: 2.2rem;
-    font-weight: 900;
-    color: var(--olive-dark);
-    line-height: 1;
-    letter-spacing: -0.03em;
-  }
-  .stat-label {
-    font-size: 0.78rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--olive);
-  }
-
-  /* ─── MARQUEE ─── */
-  .marquee-strip {
-    background: var(--olive);
-    padding: 0.9rem 0;
-    overflow: hidden;
-    white-space: nowrap;
-  }
-  .marquee-track {
-    display: inline-flex;
-    animation: marquee 22s linear infinite;
-  }
-  .marquee-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 1.5rem;
-    padding: 0 2rem;
-    font-size: 0.78rem;
-    font-weight: 700;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.75);
-  }
-  .marquee-item span { color: var(--yellow); font-size: 1rem; }
-  @keyframes marquee {
-    from { transform: translateX(0); }
-    to   { transform: translateX(-50%); }
-  }
-
-  /* ─── SECTION BASE ─── */
-  section { position: relative; }
-  .container { max-width: 1280px; margin: 0 auto; padding: 0 4rem; }
-
-  .section-label {
-    font-size: 0.78rem;
-    font-weight: 700;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--olive-mid);
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-  }
-  .section-label::before {
-    content: '';
-    width: 28px; height: 2px;
-    background: var(--yellow);
-    flex-shrink: 0;
-  }
-
-  .section-title {
-    font-size: clamp(2.4rem, 4vw, 3.6rem);
-    font-weight: 900;
-    line-height: 1.05;
-    letter-spacing: -0.03em;
-    color: var(--ink);
-  }
-  .section-title em {
-    font-style: normal;
-    color: var(--olive);
-  }
-
-  /* ─── PRODUCTS ─── */
-  .products {
-    padding: 7rem 0;
-    background: var(--white);
-  }
-
-  .products-header {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    align-items: end;
-    gap: 3rem;
-    margin-bottom: 4rem;
-  }
-  .products-desc {
-    font-size: 1.05rem;
-    font-weight: 300;
-    color: var(--muted);
-    line-height: 1.8;
-    max-width: 420px;
-    margin-left: auto;
-    padding-bottom: 0.25rem;
-  }
-
-  .products-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2px;
-    background: var(--olive-pale);
-  }
-
-  .product-card {
-    background: var(--white);
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-    transition: background 0.3s;
-    display: flex;
-    flex-direction: column;
-  }
-  .product-card::before {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0;
-    width: 0; height: 4px;
-    background: var(--yellow);
-    transition: width 0.4s var(--ease-out);
-  }
-  .product-card:hover::before { width: 100%; }
-  .product-card:hover { background: var(--olive-wash); }
-
-  /* Product image */
-  .product-img-wrap {
-    width: 100%;
-    height: 220px;
-    overflow: hidden;
-    flex-shrink: 0;
-  }
-  .product-img-wrap img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.6s var(--ease-out);
-    filter: saturate(0.85);
-  }
-  .product-card:hover .product-img-wrap img { transform: scale(1.06); }
-
-  .product-body { padding: 2rem 2rem 2.5rem; }
-
-  .product-number {
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.18em;
-    color: var(--olive-mid);
-    text-transform: uppercase;
-    margin-bottom: 0.75rem;
-  }
-  .product-name {
-    font-size: 1.55rem;
-    font-weight: 900;
-    color: var(--olive-dark);
-    line-height: 1.15;
-    letter-spacing: -0.02em;
-    margin-bottom: 0.85rem;
-  }
-  .product-desc {
-    font-size: 0.95rem;
-    font-weight: 400;
-    color: var(--muted);
-    line-height: 1.75;
-    margin-bottom: 1.5rem;
-  }
-  .product-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-  }
-  .tag {
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--olive);
-    border: 1.5px solid var(--olive-pale);
-    padding: 0.3rem 0.8rem;
-    transition: border-color 0.2s, background 0.2s;
-  }
-  .product-card:hover .tag {
-    border-color: var(--yellow);
-    background: var(--yellow-lt);
-    color: var(--olive-dark);
-  }
-
-  .product-arrow {
-    position: absolute;
-    top: 1.5rem; right: 1.5rem;
-    width: 38px; height: 38px;
-    background: var(--yellow);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--ink);
-    font-size: 0.9rem;
-    transition: background 0.2s, transform 0.2s;
-  }
-  .product-card:hover .product-arrow {
-    background: var(--olive-dark);
-    color: var(--yellow);
-    transform: rotate(45deg);
-  }
-
-  /* ─── WHY ─── */
-  .why {
-    padding: 7rem 0;
-    background: var(--olive-wash);
-  }
-
-  .why-inner {
-    display: grid;
-    grid-template-columns: 5fr 7fr;
-    gap: 6rem;
-    align-items: start;
-  }
-
-  .why-left { position: sticky; top: 6rem; }
-
-  /* Why image */
-  .why-img {
-    margin-top: 2.5rem;
-    width: 100%;
-    aspect-ratio: 4/3;
-    overflow: hidden;
-  }
-  .why-img img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    filter: saturate(0.8);
-    transition: transform 0.6s var(--ease-out);
-  }
-  .why-img:hover img { transform: scale(1.04); }
-
-  .features-list { display: flex; flex-direction: column; }
-
-  .feature-item {
-    display: grid;
-    grid-template-columns: 36px 1fr;
-    gap: 1.25rem;
-    padding: 2rem 0;
-    border-bottom: 1.5px solid var(--border);
-    align-items: start;
-    transition: padding-left 0.3s var(--ease-out);
-  }
-  .feature-item:first-child { border-top: 1.5px solid var(--border); }
-  .feature-item:hover { padding-left: 0.75rem; }
-
-  .feature-num {
-    font-size: 0.72rem;
-    font-weight: 900;
-    color: var(--yellow-dk);
-    background: var(--yellow-lt);
-    width: 28px; height: 28px;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-    margin-top: 0.2rem;
-  }
-
-  .feature-title {
-    font-size: 1.2rem;
-    font-weight: 800;
-    color: var(--olive-dark);
-    margin-bottom: 0.4rem;
-    letter-spacing: -0.01em;
-  }
-  .feature-text {
-    font-size: 0.98rem;
-    font-weight: 400;
-    color: var(--muted);
-    line-height: 1.75;
-  }
-
-  /* ─── PROCESS ─── */
-  .process {
-    padding: 0;
-    background: var(--olive-dark);
-    color: var(--white);
-  }
-
-  /* Process banner image */
-  .process-banner {
-    width: 100%;
-    height: 380px;
-    overflow: hidden;
-    position: relative;
-  }
-  .process-banner img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    object-position: center 40%;
-    filter: saturate(0.6) brightness(0.5);
-  }
-  .process-banner-overlay {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 2rem;
-  }
-  .process-banner-text {
-    font-size: clamp(2.2rem, 4vw, 3.8rem);
-    font-weight: 900;
-    line-height: 1.05;
-    letter-spacing: -0.03em;
-    color: var(--white);
-  }
-  .process-banner-text em {
-    font-style: normal;
-    color: var(--yellow);
-  }
-
-  .process-body { padding: 5rem 0 6rem; }
-
-  .process .section-label { color: var(--yellow); }
-  .process .section-label::before { background: var(--yellow); }
-
-  .process-header {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 3rem;
-    align-items: end;
-    margin-bottom: 4rem;
-  }
-  .process-intro {
-    font-size: 1.05rem;
-    font-weight: 300;
-    color: rgba(255,255,255,0.55);
-    line-height: 1.8;
-    max-width: 400px;
-    margin-left: auto;
-  }
-
-  .steps {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.5px;
-    background: rgba(255,255,255,0.08);
-  }
-  .step {
-    background: var(--olive-dark);
-    padding: 2.5rem 2rem;
-    position: relative;
-    overflow: hidden;
-    transition: background 0.3s;
-  }
-  .step:hover { background: var(--olive); }
-
-  .step-num {
-    font-size: 5rem;
-    font-weight: 900;
-    color: rgba(255,255,255,0.05);
-    line-height: 1;
-    position: absolute;
-    top: 1rem; right: 1rem;
-    letter-spacing: -0.05em;
-  }
-  .step-icon-wrap {
-    width: 48px; height: 48px;
-    border: 2px solid rgba(245,224,51,0.35);
-    display: flex; align-items: center; justify-content: center;
-    margin-bottom: 1.5rem;
-    color: var(--yellow);
-    transition: border-color 0.3s, background 0.3s;
-  }
-  .step:hover .step-icon-wrap {
-    border-color: var(--yellow);
-    background: rgba(245,224,51,0.1);
-  }
-  .step-title {
-    font-size: 1.2rem;
-    font-weight: 800;
-    color: var(--white);
-    margin-bottom: 0.6rem;
-    letter-spacing: -0.01em;
-  }
-  .step-text {
-    font-size: 0.95rem;
-    font-weight: 400;
-    color: rgba(255,255,255,0.45);
-    line-height: 1.75;
-  }
-
-  /* ─── CUSTOMIZATION ─── */
-  .custom {
-    padding: 7rem 0;
-    background: var(--white);
-  }
-
-  .custom-inner {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6rem;
-    align-items: center;
-  }
-
-  /* Custom image collage */
-  .custom-visual {
-    position: relative;
-    height: 520px;
-  }
-  .custom-img-main {
-    position: absolute;
-    top: 0; left: 0;
-    width: 70%; height: 75%;
-    overflow: hidden;
-  }
-  .custom-img-main img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    filter: saturate(0.85);
-  }
-  .custom-img-accent {
-    position: absolute;
-    bottom: 0; right: 0;
-    width: 55%; height: 55%;
-    overflow: hidden;
-    border: 6px solid var(--white);
-  }
-  .custom-img-accent img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    filter: saturate(0.85);
-  }
-  .custom-badge {
-    position: absolute;
-    top: 50%; left: 55%;
-    transform: translate(-50%, -50%);
-    background: var(--yellow);
-    color: var(--ink);
-    padding: 1.25rem 1rem;
-    text-align: center;
-    z-index: 2;
-    width: 110px;
-  }
-  .custom-badge-num {
-    font-size: 2rem;
-    font-weight: 900;
-    line-height: 1;
-    letter-spacing: -0.03em;
-  }
-  .custom-badge-label {
-    font-size: 0.65rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--olive-dark);
-    margin-top: 0.25rem;
-  }
-
-  .options-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.75rem;
-    margin-top: 2.5rem;
-  }
-  .option-chip {
-    background: var(--olive-wash);
-    border: 1.5px solid var(--border);
-    padding: 1rem 1.25rem;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    transition: border-color 0.2s, background 0.2s;
-    cursor: default;
-  }
-  .option-chip:hover {
-    border-color: var(--yellow);
-    background: var(--yellow-lt);
-  }
-  .option-dot {
-    width: 8px; height: 8px;
-    background: var(--yellow-dk);
-    flex-shrink: 0;
-  }
-  .option-label {
-    font-size: 0.88rem;
-    font-weight: 600;
-    color: var(--olive-dark);
-  }
-
-  .custom-cta {
-    margin-top: 2.5rem;
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-  }
-  .custom-note {
-    font-size: 0.88rem;
-    font-weight: 400;
-    color: var(--muted);
-  }
-
-  /* ─── TRUST STRIP ─── */
-  .brand-strip {
-    padding: 4.5rem 0;
-    background: var(--olive);
-    text-align: center;
-  }
-  .brand-strip-label {
-    font-size: 0.78rem;
-    font-weight: 700;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.5);
-    margin-bottom: 2.5rem;
-  }
-  .trust-items {
-    display: flex;
-    justify-content: center;
-    gap: 3.5rem;
-    flex-wrap: wrap;
-  }
-  .trust-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    color: var(--white);
-    font-size: 0.95rem;
-    font-weight: 600;
-  }
-  .trust-icon {
-    width: 22px; height: 22px;
-    color: var(--yellow);
-    flex-shrink: 0;
-  }
-
-  /* ─── CTA ─── */
-  .cta-section {
-    padding: 0;
-    background: var(--olive-dark);
-    position: relative;
-    overflow: hidden;
-  }
-  .cta-img {
-    width: 100%; height: 500px;
-    position: relative;
-  }
-  .cta-img img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    filter: saturate(0.5) brightness(0.35);
-  }
-  .cta-content {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 2rem;
-  }
-  .cta-title {
-    font-size: clamp(2.5rem, 5vw, 4.5rem);
-    font-weight: 900;
-    line-height: 1.0;
-    letter-spacing: -0.03em;
-    color: var(--white);
-    margin-bottom: 1.25rem;
-  }
-  .cta-title em {
-    font-style: normal;
-    color: var(--yellow);
-  }
-  .cta-sub {
-    font-size: 1.05rem;
-    font-weight: 300;
-    color: rgba(255,255,255,0.65);
-    line-height: 1.75;
-    max-width: 580px;
-    margin-bottom: 2.5rem;
-  }
-  .cta-actions {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1.25rem;
-    flex-wrap: wrap;
-  }
-  .btn-outline {
-    background: transparent;
-    color: var(--white);
-    padding: 1.1rem 2.5rem;
-    font-family: var(--ff);
-    font-size: 0.95rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    border: 2px solid rgba(255,255,255,0.3);
-    cursor: pointer;
-    transition: border-color 0.2s, color 0.2s;
-    display: inline-block;
-  }
-  .btn-outline:hover { border-color: var(--yellow); color: var(--yellow); }
-
-  /* ─── FOOTER ─── */
-  footer {
-    background: var(--ink);
-    color: var(--white);
-    padding: 5rem 0 2.5rem;
-  }
-  .footer-top {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr;
-    gap: 4rem;
-    padding-bottom: 4rem;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-  }
-  .footer-brand-name {
-    font-size: 2rem;
-    font-weight: 900;
-    letter-spacing: -0.02em;
-    color: var(--white);
-    margin-bottom: 1rem;
-    text-transform: lowercase;
-  }
-  .footer-brand-name span { color: var(--yellow); }
-  .footer-tagline {
-    font-size: 0.95rem;
-    font-weight: 300;
-    color: rgba(255,255,255,0.4);
-    line-height: 1.75;
-    max-width: 260px;
-    margin-bottom: 2rem;
-  }
-  .footer-social { display: flex; gap: 0.75rem; }
-  .social-link {
-    width: 38px; height: 38px;
-    border: 1.5px solid rgba(255,255,255,0.15);
-    display: flex; align-items: center; justify-content: center;
-    color: rgba(255,255,255,0.4);
-    transition: border-color 0.2s, color 0.2s, background 0.2s;
-  }
-  .social-link:hover { border-color: var(--yellow); color: var(--ink); background: var(--yellow); }
-
-  .footer-col-title {
-    font-size: 0.72rem;
-    font-weight: 800;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.3);
-    margin-bottom: 1.5rem;
-  }
-  .footer-links { list-style: none; display: flex; flex-direction: column; gap: 0.8rem; }
-  .footer-links a {
-    font-size: 0.95rem;
-    font-weight: 400;
-    color: rgba(255,255,255,0.55);
-    transition: color 0.2s;
-  }
-  .footer-links a:hover { color: var(--yellow); }
-
-  .footer-bottom {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-top: 2rem;
-  }
-  .footer-copy {
-    font-size: 0.82rem;
-    color: rgba(255,255,255,0.25);
-  }
-  .footer-copy span { color: var(--yellow); }
-  .footer-sub-links { display: flex; gap: 2rem; list-style: none; }
-  .footer-sub-links a {
-    font-size: 0.82rem;
-    color: rgba(255,255,255,0.25);
-    transition: color 0.2s;
-  }
-  .footer-sub-links a:hover { color: rgba(255,255,255,0.55); }
-
-  /* ─── ANIMATIONS ─── */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to   { opacity: 1; transform: none; }
-  }
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-  }
-
-  /* ─── RESPONSIVE ─── */
-  @media (max-width: 1024px) {
-    nav { padding: 1.25rem 2rem; }
-    .nav-links { gap: 1.5rem; }
-    .container { padding: 0 2rem; }
-    .hero { grid-template-columns: 1fr; min-height: auto; }
-    .hero-left { padding: 9rem 2rem 4rem; }
-    .hero-right { height: 400px; }
-    .hero-stat-strip { position: relative; }
-    .products-header { grid-template-columns: 1fr; }
-    .products-desc { margin-left: 0; }
-    .products-grid { grid-template-columns: 1fr; }
-    .why-inner { grid-template-columns: 1fr; gap: 3rem; }
-    .why-left { position: relative; top: 0; }
-    .process-header { grid-template-columns: 1fr; }
-    .process-intro { margin-left: 0; }
-    .steps { grid-template-columns: 1fr 1fr; }
-    .custom-inner { grid-template-columns: 1fr; }
-    .custom-visual { height: 380px; }
-    .footer-top { grid-template-columns: 1fr 1fr; gap: 2.5rem; }
-  }
-
-  @media (max-width: 640px) {
-    nav { padding: 1rem 1.25rem; }
-    .nav-links { display: none; }
-    .container { padding: 0 1.25rem; }
-    .hero-stat-strip { flex-wrap: wrap; }
-    .hero-stat { min-width: 50%; border-bottom: 1px solid rgba(0,0,0,0.1); }
-    .steps { grid-template-columns: 1fr; }
-    .options-grid { grid-template-columns: 1fr; }
-    .footer-top { grid-template-columns: 1fr; }
-    .footer-bottom { flex-direction: column; gap: 1rem; text-align: center; }
-    .cta-actions { flex-direction: column; }
-    .btn-primary, .btn-outline { width: 100%; text-align: center; }
-    .process-banner { height: 260px; }
-  }
-</style>
-
-<!-- ─── NAV ─── -->
-<nav id="navbar">
-  <a href="/" class="nav-logo">quino<span>box</span></a>
-  <ul class="nav-links">
-    <li><a href="#products">Products</a></li>
-    <li><a href="#why">Why Us</a></li>
-    <li><a href="#process">Process</a></li>
-    <li><a href="#customize">Customize</a></li>
-    <li><a href="#contact" class="nav-cta">Get a Quote</a></li>
-  </ul>
-</nav>
-
-<!-- ─── HERO ─── -->
-<section class="hero">
-  <div class="hero-left">
-    <div class="hero-eyebrow">Custom Packaging Solutions</div>
-    <h1 class="hero-title">
-      Boxes that speak<br>
-      <em>before you do.</em>
-    </h1>
-    <p class="hero-sub">
-      Precision-crafted carton boxes, gift boxes, and honeycomb cargo packaging —
-      fully customized to carry your brand, protect your product, and impress your customer.
-    </p>
-    <div class="hero-actions">
-      <a href="#contact" class="btn-primary">Request a Sample</a>
-      <a href="#products" class="btn-ghost">
-        Explore Products
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </a>
-    </div>
-  </div>
-
-  <div class="hero-right">
-    <img
-      src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1200&q=80&auto=format&fit=crop"
-      alt="Custom packaging boxes"
-      loading="eager"
-    />
-  </div>
-
-  <div class="hero-stat-strip">
-    <div class="hero-stat">
-      <div class="stat-number">500+</div>
-      <div class="stat-label">Projects Delivered</div>
-    </div>
-    <div class="hero-stat">
-      <div class="stat-number">15+</div>
-      <div class="stat-label">Years Experience</div>
-    </div>
-    <div class="hero-stat">
-      <div class="stat-number">50+</div>
-      <div class="stat-label">Customization Options</div>
-    </div>
-    <div class="hero-stat">
-      <div class="stat-number">100%</div>
-      <div class="stat-label">Brand Consistency</div>
-    </div>
-  </div>
-</section>
-
-<!-- ─── MARQUEE ─── -->
-<div class="marquee-strip">
-  <div class="marquee-track">
-    <span class="marquee-item">Carton Boxes <span>·</span></span>
-    <span class="marquee-item">Gift Boxes <span>·</span></span>
-    <span class="marquee-item">Honeycomb Cargo Boxes <span>·</span></span>
-    <span class="marquee-item">Full Color Print <span>·</span></span>
-    <span class="marquee-item">Embossing & Foiling <span>·</span></span>
-    <span class="marquee-item">Custom Die-Cut <span>·</span></span>
-    <span class="marquee-item">Low MOQ <span>·</span></span>
-    <span class="marquee-item">Eco-Friendly Materials <span>·</span></span>
-    <span class="marquee-item">Carton Boxes <span>·</span></span>
-    <span class="marquee-item">Gift Boxes <span>·</span></span>
-    <span class="marquee-item">Honeycomb Cargo Boxes <span>·</span></span>
-    <span class="marquee-item">Full Color Print <span>·</span></span>
-    <span class="marquee-item">Embossing & Foiling <span>·</span></span>
-    <span class="marquee-item">Custom Die-Cut <span>·</span></span>
-    <span class="marquee-item">Low MOQ <span>·</span></span>
-    <span class="marquee-item">Eco-Friendly Materials <span>·</span></span>
-  </div>
-</div>
-
-<!-- ─── PRODUCTS ─── -->
-<section class="products" id="products">
-  <div class="container">
-    <div class="products-header reveal">
-      <div>
-        <div class="section-label">Our Products</div>
-        <h2 class="section-title">Three categories.<br><em>Infinite possibilities.</em></h2>
-      </div>
-      <p class="products-desc reveal reveal-delay-2">
-        Every box we craft is built around your brand's needs — from structural engineering to surface finishing. No two boxes need to be the same.
-      </p>
-    </div>
-
-    <div class="products-grid">
-      <!-- Card 1: Carton Boxes -->
-      <div class="product-card reveal">
-        <div class="product-img-wrap">
-          <img
-            src="https://images.unsplash.com/photo-1595079676601-f1adf5be5dee?w=800&q=80&auto=format&fit=crop"
-            alt="Custom carton boxes"
-            loading="lazy"
-          />
-        </div>
-        <div class="product-body">
-          <div class="product-number">Product 01</div>
-          <h3 class="product-name">Carton Boxes</h3>
-          <p class="product-desc">
-            Durable, versatile corrugated and folding carton boxes tailored to your product dimensions, weight requirements, and brand identity.
-          </p>
-          <div class="product-tags">
-            <span class="tag">Corrugated</span>
-            <span class="tag">Folding Carton</span>
-            <span class="tag">Mailer Boxes</span>
-            <span class="tag">Rigid Boxes</span>
-          </div>
-        </div>
-        <div class="product-arrow">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-            <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-        </div>
-      </div>
-
-      <!-- Card 2: Gift Boxes -->
-      <div class="product-card reveal reveal-delay-1">
-        <div class="product-img-wrap">
-          <img
-            src="https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=800&q=80&auto=format&fit=crop"
-            alt="Premium gift boxes"
-            loading="lazy"
-          />
-        </div>
-        <div class="product-body">
-          <div class="product-number">Product 02</div>
-          <h3 class="product-name">Gift Boxes</h3>
-          <p class="product-desc">
-            Premium presentation boxes that elevate unboxing into an experience — designed for luxury retail, corporate gifting, and special occasions.
-          </p>
-          <div class="product-tags">
-            <span class="tag">Ribbon Closure</span>
-            <span class="tag">Magnetic Lid</span>
-            <span class="tag">Foil Stamping</span>
-            <span class="tag">Embossing</span>
-          </div>
-        </div>
-        <div class="product-arrow">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-            <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-        </div>
-      </div>
-
-      <!-- Card 3: Honeycomb -->
-      <div class="product-card reveal reveal-delay-2">
-        <div class="product-img-wrap">
-          <img
-            src="https://images.unsplash.com/photo-1530982011887-3cc11cc85693?w=800&q=80&auto=format&fit=crop"
-            alt="Honeycomb cargo packaging"
-            loading="lazy"
-          />
-        </div>
-        <div class="product-body">
-          <div class="product-number">Product 03</div>
-          <h3 class="product-name">Honeycomb Cargo Boxes</h3>
-          <p class="product-desc">
-            Engineered paper honeycomb detachable cargo boxes — lightweight yet structurally superior, ideal for heavy-duty shipping and fragile goods.
-          </p>
-          <div class="product-tags">
-            <span class="tag">Detachable</span>
-            <span class="tag">Eco-Friendly</span>
-            <span class="tag">Heavy Load</span>
-            <span class="tag">Custom Size</span>
-          </div>
-        </div>
-        <div class="product-arrow">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-            <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ─── WHY QUINOBOX ─── -->
-<section class="why" id="why">
-  <div class="container">
-    <div class="why-inner">
-      <div class="why-left reveal">
-        <div class="section-label">Why Quinobox</div>
-        <h2 class="section-title">Built on<br><em>craft &<br>precision.</em></h2>
-        <div class="why-img">
-          <img
-            src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&q=80&auto=format&fit=crop"
-            alt="Packaging craftsmanship"
-            loading="lazy"
-          />
-        </div>
-      </div>
-
-      <div class="features-list">
-        <div class="feature-item reveal">
-          <div class="feature-num">01</div>
-          <div class="feature-content">
-            <h3 class="feature-title">Full Customization</h3>
-            <p class="feature-text">From dimensions and materials to print finishes and structural design — every specification is yours to define. No templates; every project is built from scratch.</p>
-          </div>
-        </div>
-        <div class="feature-item reveal reveal-delay-1">
-          <div class="feature-num">02</div>
-          <div class="feature-content">
-            <h3 class="feature-title">Flexible Minimum Order</h3>
-            <p class="feature-text">Whether you need 50 units for a product launch or 50,000 for retail distribution, our production lines accommodate both without compromising quality.</p>
-          </div>
-        </div>
-        <div class="feature-item reveal reveal-delay-2">
-          <div class="feature-num">03</div>
-          <div class="feature-content">
-            <h3 class="feature-title">Premium Material Sourcing</h3>
-            <p class="feature-text">We partner with certified paper mills to ensure consistent grammage, color fidelity, and structural integrity across every batch you order.</p>
-          </div>
-        </div>
-        <div class="feature-item reveal reveal-delay-3">
-          <div class="feature-num">04</div>
-          <div class="feature-content">
-            <h3 class="feature-title">Eco-First Manufacturing</h3>
-            <p class="feature-text">All packaging is recyclable and produced using sustainable practices. Our honeycomb solutions replace styrofoam — same protection, zero guilt.</p>
-          </div>
-        </div>
-        <div class="feature-item reveal reveal-delay-4">
-          <div class="feature-num">05</div>
-          <div class="feature-content">
-            <h3 class="feature-title">Fast Turnaround</h3>
-            <p class="feature-text">Production timelines are optimized from day one. Sample approval to full production in as little as 7 working days for standard runs.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ─── PROCESS ─── -->
-<section class="process" id="process">
-  <!-- Full-width banner image -->
-  <div class="process-banner">
-    <img
-      src="https://images.unsplash.com/photo-1565799557186-cf0f38bce06e?w=1600&q=80&auto=format&fit=crop"
-      alt="Packaging production"
-      loading="lazy"
-    />
-    <div class="process-banner-overlay">
-      <div class="process-banner-text">
-        From concept to<br><em>your doorstep.</em>
-      </div>
-    </div>
-  </div>
-
-  <div class="process-body">
+<Layout title="Custom Carton & Gift Box Solutions | Quinobox">
+  <!-- Hero Section -->
+  <section class="pt-32 pb-24 bg-white">
     <div class="container">
-      <div class="process-header">
-        <div class="reveal">
-          <div class="section-label">How It Works</div>
-          <h2 class="section-title" style="color:var(--white)">Four steps.<br><em>Zero guesswork.</em></h2>
-        </div>
-        <p class="process-intro reveal reveal-delay-2">
-          Our process removes friction and gives you complete confidence at every stage — from your first brief to final delivery.
+      <div class="max-w-3xl mx-auto text-center animate-fade-up">
+        <h1 class="text-5xl md:text-6xl font-bold font-display text-primary-900 mb-6 leading-tight">
+          Premium Custom Boxes for Your Brand
+        </h1>
+        <p class="text-xl text-neutral-600 mb-12 leading-relaxed">
+          Elevate your packaging with bespoke carton and gift box solutions designed for businesses across Malaysia
         </p>
-      </div>
-
-      <div class="steps">
-        <div class="step reveal">
-          <div class="step-num">01</div>
-          <div class="step-icon-wrap">
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-              <path d="M4 17l5-5 4 4 5-8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              <rect x="2" y="2" width="18" height="18" rx="1" stroke="currentColor" stroke-width="1.5"/>
-            </svg>
-          </div>
-          <h3 class="step-title">Brief & Spec</h3>
-          <p class="step-text">Share your dimensions, quantity, material preferences, and design files. We'll review and advise on the best structure.</p>
-        </div>
-        <div class="step reveal reveal-delay-1">
-          <div class="step-num">02</div>
-          <div class="step-icon-wrap">
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-              <path d="M6 16l4-8 3 5 2-3 3 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="11" cy="11" r="9" stroke="currentColor" stroke-width="1.5"/>
-            </svg>
-          </div>
-          <h3 class="step-title">Design & Sampling</h3>
-          <p class="step-text">We create structural dielines and print-ready artwork. Physical samples are produced for your approval before any bulk run.</p>
-        </div>
-        <div class="step reveal reveal-delay-2">
-          <div class="step-num">03</div>
-          <div class="step-icon-wrap">
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-              <rect x="3" y="6" width="16" height="12" rx="1" stroke="currentColor" stroke-width="1.5"/>
-              <path d="M7 6V5a4 4 0 018 0v1" stroke="currentColor" stroke-width="1.5"/>
-              <circle cx="11" cy="12" r="1.5" fill="currentColor"/>
-            </svg>
-          </div>
-          <h3 class="step-title">Production</h3>
-          <p class="step-text">Upon sample sign-off, your full order enters production. Quality checks at multiple stages ensure total consistency.</p>
-        </div>
-        <div class="step reveal reveal-delay-3">
-          <div class="step-num">04</div>
-          <div class="step-icon-wrap">
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-              <path d="M3 11l8 8 8-8M11 3v16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <h3 class="step-title">Delivery</h3>
-          <p class="step-text">Packed and shipped to your warehouse or fulfillment center. We coordinate logistics for safe, on-time arrival.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ─── CUSTOMIZATION ─── -->
-<section class="custom" id="customize">
-  <div class="container">
-    <div class="custom-inner">
-      <!-- Image collage -->
-      <div class="custom-visual reveal">
-        <div class="custom-img-main">
-          <img
-            src="https://images.unsplash.com/photo-1612838320302-4b3b3996c3b6?w=800&q=80&auto=format&fit=crop"
-            alt="Custom printed boxes"
-            loading="lazy"
-          />
-        </div>
-        <div class="custom-img-accent">
-          <img
-            src="https://images.unsplash.com/photo-1571942676516-bcab84649e44?w=600&q=80&auto=format&fit=crop"
-            alt="Gift box finishing"
-            loading="lazy"
-          />
-        </div>
-        <div class="custom-badge">
-          <div class="custom-badge-num">50+</div>
-          <div class="custom-badge-label">Finish Options</div>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a href="/quote" class="btn btn-primary btn-lg">Request Quote</a>
+          <a href="/services" class="btn btn-secondary btn-lg">Explore Services</a>
         </div>
       </div>
 
-      <!-- Options -->
-      <div class="custom-options reveal reveal-delay-2">
-        <div class="section-label">Customization</div>
-        <h2 class="section-title">Make it<br><em>unmistakably yours.</em></h2>
-        <p style="margin-top:1.25rem; font-size:1rem; font-weight:400; color:var(--muted); line-height:1.8;">
-          Choose from a wide range of material, print, and finishing options. Mix and match to create packaging that perfectly reflects your brand.
-        </p>
-
-        <div class="options-grid">
-          <div class="option-chip"><div class="option-dot"></div><span class="option-label">Full Color Offset Print</span></div>
-          <div class="option-chip"><div class="option-dot"></div><span class="option-label">Gold & Silver Foiling</span></div>
-          <div class="option-chip"><div class="option-dot"></div><span class="option-label">Spot UV Coating</span></div>
-          <div class="option-chip"><div class="option-dot"></div><span class="option-label">Embossing & Debossing</span></div>
-          <div class="option-chip"><div class="option-dot"></div><span class="option-label">Matte / Gloss Lamination</span></div>
-          <div class="option-chip"><div class="option-dot"></div><span class="option-label">Custom Die-Cut Shape</span></div>
-          <div class="option-chip"><div class="option-dot"></div><span class="option-label">Magnetic Closure</span></div>
-          <div class="option-chip"><div class="option-dot"></div><span class="option-label">Ribbon Pull</span></div>
-          <div class="option-chip"><div class="option-dot"></div><span class="option-label">Window Cutout</span></div>
-          <div class="option-chip"><div class="option-dot"></div><span class="option-label">Interior Printing</span></div>
-        </div>
-
-        <div class="custom-cta">
-          <a href="#contact" class="btn-primary">Start Your Design</a>
-          <span class="custom-note">Free structural sample on request</span>
-        </div>
+      <!-- Hero Image Placeholder -->
+      <div class="mt-16 aspect-video bg-neutral-100 rounded-lg border border-neutral-200 flex items-center justify-center">
+        <span class="text-neutral-400">Custom packaging showcase</span>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- ─── TRUST STRIP ─── -->
-<div class="brand-strip">
-  <p class="brand-strip-label">Trusted for quality packaging across industries</p>
-  <div class="trust-items">
-    <div class="trust-item">
-      <svg class="trust-icon" viewBox="0 0 20 20" fill="none">
-        <path d="M10 2l2.4 5h5.2l-4.2 3.1 1.6 5L10 12l-5 3.1 1.6-5L2.4 7h5.2L10 2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
-      </svg>
-      ISO-Certified Materials
-    </div>
-    <div class="trust-item">
-      <svg class="trust-icon" viewBox="0 0 20 20" fill="none">
-        <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.4"/>
-        <path d="M6 10l3 3 5-5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-      </svg>
-      Sample Approval Guarantee
-    </div>
-    <div class="trust-item">
-      <svg class="trust-icon" viewBox="0 0 20 20" fill="none">
-        <path d="M3 10h4l3-7 4 14 3-7h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      100% Recyclable Options
-    </div>
-    <div class="trust-item">
-      <svg class="trust-icon" viewBox="0 0 20 20" fill="none">
-        <rect x="3" y="6" width="14" height="10" rx="1" stroke="currentColor" stroke-width="1.4"/>
-        <path d="M7 6V5a3 3 0 016 0v1" stroke="currentColor" stroke-width="1.4"/>
-      </svg>
-      Secure B2B Ordering
-    </div>
-    <div class="trust-item">
-      <svg class="trust-icon" viewBox="0 0 20 20" fill="none">
-        <path d="M10 3v4M10 13v4M3 10h4M13 10h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-        <circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.4"/>
-      </svg>
-      Custom Size, Any Shape
-    </div>
-  </div>
-</div>
-
-<!-- ─── CTA ─── -->
-<section class="cta-section" id="contact">
-  <div class="cta-img">
-    <img
-      src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=1600&q=80&auto=format&fit=crop"
-      alt="Packaging warehouse"
-      loading="lazy"
-    />
-    <div class="cta-content reveal">
-      <div class="section-label" style="justify-content:center; color:var(--yellow); margin-bottom:1.25rem;">
-        <span style="background:var(--yellow); width:28px; height:2px; display:inline-block;"></span>
-        Get Started
-      </div>
-      <h2 class="cta-title">
-        Your next box<br>starts <em>here.</em>
-      </h2>
-      <p class="cta-sub">
-        Tell us your product type, dimensions, quantity, and brand guidelines.
-        We'll have a quote and structural recommendation back within 24 hours.
+  <!-- Services Highlight Section -->
+  <section class="section bg-neutral-50">
+    <div class="container">
+      <h2 class="text-4xl font-bold font-display text-center text-primary-900 mb-4">What We Offer</h2>
+      <p class="text-center text-neutral-600 mb-16 max-w-2xl mx-auto">
+        Comprehensive packaging solutions tailored to your business needs
       </p>
-      <div class="cta-actions">
-        <a href="mailto:hello@quinobox.com" class="btn-primary">Get a Free Quote</a>
-        <a href="https://wa.me/60000000000" class="btn-outline">WhatsApp Us</a>
-      </div>
-    </div>
-  </div>
-</section>
 
-<!-- ─── FOOTER ─── -->
-<footer>
-  <div class="container">
-    <div class="footer-top">
-      <div>
-        <div class="footer-brand-name">quino<span>box</span></div>
-        <p class="footer-tagline">
-          Custom packaging solutions for brands that care about every detail — from structural integrity to the moment of unboxing.
-        </p>
-        <div class="footer-social">
-          <a href="#" class="social-link" aria-label="Instagram">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
-            </svg>
-          </a>
-          <a href="#" class="social-link" aria-label="Facebook">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/>
-            </svg>
-          </a>
-          <a href="#" class="social-link" aria-label="LinkedIn">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/>
-            </svg>
-          </a>
+      <div class="grid-3">
+        <!-- Service 1 -->
+        <div class="card">
+          <div class="w-12 h-12 bg-accent-100 rounded-lg flex items-center justify-center mb-6">
+            <span class="text-2xl">📦</span>
+          </div>
+          <h3 class="text-2xl font-bold font-display text-primary-900 mb-3">Custom Carton Boxes</h3>
+          <p class="text-neutral-600 mb-4">
+            Bespoke cardboard boxes designed and manufactured to your exact specifications with premium finishes
+          </p>
+          <a href="/services#custom-carton" class="link-underline text-accent-900 font-semibold">Learn More →</a>
+        </div>
+
+        <!-- Service 2 -->
+        <div class="card">
+          <div class="w-12 h-12 bg-accent-100 rounded-lg flex items-center justify-center mb-6">
+            <span class="text-2xl">🎁</span>
+          </div>
+          <h3 class="text-2xl font-bold font-display text-primary-900 mb-3">Gift Boxes</h3>
+          <p class="text-neutral-600 mb-4">
+            Elegant and luxurious gift boxes perfect for premium products, special occasions, and brand experiences
+          </p>
+          <a href="/services#gift-boxes" class="link-underline text-accent-900 font-semibold">Learn More →</a>
+        </div>
+
+        <!-- Service 3 -->
+        <div class="card">
+          <div class="w-12 h-12 bg-accent-100 rounded-lg flex items-center justify-center mb-6">
+            <span class="text-2xl">🏢</span>
+          </div>
+          <h3 class="text-2xl font-bold font-display text-primary-900 mb-3">Wholesale Solutions</h3>
+          <p class="text-neutral-600 mb-4">
+            Bulk packaging solutions for businesses, resellers, and enterprises at competitive wholesale prices
+          </p>
+          <a href="/services#wholesale" class="link-underline text-accent-900 font-semibold">Learn More →</a>
         </div>
       </div>
+    </div>
+  </section>
 
-      <div>
-        <div class="footer-col-title">Products</div>
-        <ul class="footer-links">
-          <li><a href="#products">Carton Boxes</a></li>
-          <li><a href="#products">Gift Boxes</a></li>
-          <li><a href="#products">Honeycomb Cargo Boxes</a></li>
-          <li><a href="#customize">Customization</a></li>
-        </ul>
-      </div>
-
-      <div>
-        <div class="footer-col-title">Company</div>
-        <ul class="footer-links">
-          <li><a href="#why">About Quinobox</a></li>
-          <li><a href="#process">Our Process</a></li>
-          <li><a href="#">Sustainability</a></li>
-          <li><a href="#">Case Studies</a></li>
-        </ul>
-      </div>
-
-      <div>
-        <div class="footer-col-title">Contact</div>
-        <ul class="footer-links">
-          <li><a href="mailto:hello@quinobox.com">hello@quinobox.com</a></li>
-          <li><a href="https://wa.me/60000000000">WhatsApp</a></li>
-          <li><a href="#">Request a Sample</a></li>
-          <li><a href="#">Get a Quote</a></li>
-        </ul>
+  <!-- Why Choose Us Section -->
+  <section class="section bg-white">
+    <div class="container">
+      <div class="grid md:grid-cols-2 gap-16 items-center">
+        <div>
+          <h2 class="text-4xl font-bold font-display text-primary-900 mb-8">Why Choose Quinobox?</h2>
+          <ul class="space-y-6">
+            <li class="flex gap-4">
+              <span class="text-accent-900 text-xl font-bold flex-shrink-0">✓</span>
+              <div>
+                <h4 class="font-bold text-primary-900 mb-1">Premium Quality</h4>
+                <p class="text-neutral-600">Crafted with attention to detail using finest materials</p>
+              </div>
+            </li>
+            <li class="flex gap-4">
+              <span class="text-accent-900 text-xl font-bold flex-shrink-0">✓</span>
+              <div>
+                <h4 class="font-bold text-primary-900 mb-1">Full Customization</h4>
+                <p class="text-neutral-600">Design, colors, dimensions - everything tailored to your brand</p>
+              </div>
+            </li>
+            <li class="flex gap-4">
+              <span class="text-accent-900 text-xl font-bold flex-shrink-0">✓</span>
+              <div>
+                <h4 class="font-bold text-primary-900 mb-1">Fast Turnaround</h4>
+                <p class="text-neutral-600">Quick production and delivery without compromising quality</p>
+              </div>
+            </li>
+            <li class="flex gap-4">
+              <span class="text-accent-900 text-xl font-bold flex-shrink-0">✓</span>
+              <div>
+                <h4 class="font-bold text-primary-900 mb-1">Competitive Pricing</h4>
+                <p class="text-neutral-600">Best value for premium packaging across Malaysia</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="aspect-square bg-neutral-100 rounded-lg border border-neutral-200 flex items-center justify-center">
+          <span class="text-neutral-400">Quality showcase image</span>
+        </div>
       </div>
     </div>
+  </section>
 
-    <div class="footer-bottom">
-      <p class="footer-copy">© 2025 Quinobox. A <span>Quinocycle</span> brand.</p>
-      <ul class="footer-sub-links">
-        <li><a href="#">Privacy Policy</a></li>
-        <li><a href="#">Terms of Use</a></li>
-        <li><a href="#">Sitemap</a></li>
-      </ul>
+  <!-- Portfolio Preview Section -->
+  <section class="section bg-neutral-50">
+    <div class="container">
+      <h2 class="text-4xl font-bold font-display text-center text-primary-900 mb-4">Recent Projects</h2>
+      <p class="text-center text-neutral-600 mb-16 max-w-2xl mx-auto">
+        Showcasing exceptional packaging solutions we've created for businesses
+      </p>
+
+      <div class="grid md:grid-cols-3 gap-8">
+        <a href="/portfolio" class="group">
+          <div class="aspect-square bg-neutral-200 rounded-lg overflow-hidden mb-4 border border-neutral-300">
+            <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-neutral-100 to-neutral-200">
+              <span class="text-neutral-400">Project 1</span>
+            </div>
+          </div>
+          <h3 class="font-bold text-primary-900 group-hover:text-accent-900 transition-colors">Premium Gift Boxes</h3>
+          <p class="text-sm text-neutral-600">Luxury cosmetics packaging</p>
+        </a>
+
+        <a href="/portfolio" class="group">
+          <div class="aspect-square bg-neutral-200 rounded-lg overflow-hidden mb-4 border border-neutral-300">
+            <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-neutral-100 to-neutral-200">
+              <span class="text-neutral-400">Project 2</span>
+            </div>
+          </div>
+          <h3 class="font-bold text-primary-900 group-hover:text-accent-900 transition-colors">Custom Cartons</h3>
+          <p class="text-sm text-neutral-600">E-commerce shipping solutions</p>
+        </a>
+
+        <a href="/portfolio" class="group">
+          <div class="aspect-square bg-neutral-200 rounded-lg overflow-hidden mb-4 border border-neutral-300">
+            <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-neutral-100 to-neutral-200">
+              <span class="text-neutral-400">Project 3</span>
+            </div>
+          </div>
+          <h3 class="font-bold text-primary-900 group-hover:text-accent-900 transition-colors">Wholesale Boxes</h3>
+          <p class="text-sm text-neutral-600">Bulk retail packaging</p>
+        </a>
+      </div>
+
+      <div class="text-center mt-12">
+        <a href="/portfolio" class="btn btn-secondary btn-lg">View All Projects</a>
+      </div>
     </div>
-  </div>
-</footer>
+  </section>
 
-<!-- ─── JS ─── -->
-<script>
-  const navbar = document.getElementById('navbar');
-  window.addEventListener('scroll', () => {
-    navbar.classList.toggle('scrolled', window.scrollY > 40);
-  });
+  <!-- Testimonials Section -->
+  <section class="section bg-white">
+    <div class="container">
+      <h2 class="text-4xl font-bold font-display text-center text-primary-900 mb-16">What Our Clients Say</h2>
 
-  const reveals = document.querySelectorAll('.reveal');
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        observer.unobserve(entry.target);
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="border-l-4 border-accent-900 pl-6 py-4">
+          <p class="text-neutral-600 mb-4 italic">
+            "Quinobox transformed our brand's unboxing experience. The quality and attention to detail exceeded expectations."
+          </p>
+          <div>
+            <p class="font-bold text-primary-900">Sarah Chen</p>
+            <p class="text-sm text-neutral-600">E-commerce Founder</p>
+          </div>
+        </div>
+
+        <div class="border-l-4 border-accent-900 pl-6 py-4">
+          <p class="text-neutral-600 mb-4 italic">
+            "Working with Quinobox was seamless. Fast turnaround, excellent communication, and premium results every time."
+          </p>
+          <div>
+            <p class="font-bold text-primary-900">Ahmad Rashid</p>
+            <p class="text-sm text-neutral-600">Retail Business Owner</p>
+          </div>
+        </div>
+
+        <div class="border-l-4 border-accent-900 pl-6 py-4">
+          <p class="text-neutral-600 mb-4 italic">
+            "The custom gift boxes we ordered are absolutely stunning. Our customers keep asking about the packaging!"
+          </p>
+          <div>
+            <p class="font-bold text-primary-900">Maya Patel</p>
+            <p class="text-sm text-neutral-600">Beauty Brand CEO</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="section bg-primary-900 text-white">
+    <div class="container max-w-3xl mx-auto text-center">
+      <h2 class="text-4xl font-bold font-display mb-6">Ready to Elevate Your Packaging?</h2>
+      <p class="text-xl text-neutral-300 mb-8">
+        Get a custom quote for your box packaging needs. Our team will work with you to create the perfect solution.
+      </p>
+      <a href="/quote" class="btn bg-accent-900 text-primary-900 hover:bg-white btn-lg">Get Your Quote Today</a>
+    </div>
+  </section>
+
+  <style>
+    .section {
+      padding: 96px 0;
+    }
+
+    @media (max-width: 768px) {
+      .section {
+        padding: 64px 0;
       }
-    });
-  }, { threshold: 0.1 });
+    }
 
-  reveals.forEach(el => observer.observe(el));
-</script>
+    .card {
+      transition: all 0.3s ease;
+    }
 
+    .card:hover {
+      transform: translateY(-8px);
+    }
+
+    .group:hover h3 {
+      color: var(--color-accent);
+    }
+  </style>
 </Layout>
